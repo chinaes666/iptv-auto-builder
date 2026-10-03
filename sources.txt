@@ -1,2 +1,10 @@
+# 综合源与 IPv4 / IPv6 混合源
 https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv4.m3u
+https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u
 https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u
+https://raw.githubusercontent.com/YueChan/Live/main/IPTV.m3u
+https://raw.githubusercontent.com/GuokeR/IPTV/main/ipv4.m3u
+
+# 央视/卫视专项源
+https://raw.githubusercontent.com/zbds/iptv/main/iptv.m3u
+https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn_cctv.m3u
