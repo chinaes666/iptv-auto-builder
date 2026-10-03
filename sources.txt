@@ -14,6 +14,8 @@ https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_pay.m
 https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_pay_status.m3u8
 https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_province.m3u8
 https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_province_status.m3u8
+https://raw.githubusercontent.com/vbskycn/iptv/refs/heads/master/tv/iptv4.m3u
+https://raw.githubusercontent.com/vbskycn/iptv/refs/heads/master/tv/iptv6.m3u
 
 # === 2. 综合国内聚合与付费数字源 ===
 https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u
