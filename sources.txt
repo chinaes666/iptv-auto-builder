@@ -3,6 +3,9 @@ https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv4.m3u
 https://raw.githubusercontent.com/suxuang/myIPTV/main/ipv4.m3u
 https://raw.githubusercontent.com/GuokeR/IPTV/main/ipv4.m3u
 https://raw.githubusercontent.com/zbds/iptv/main/iptv.m3u
+https://guovin.github.io/iptv-api/result.m3u
+https://live.zbds.top/tv/iptv4.m3u
+https://live.zbds.top/tv/iptv6.m3u
 
 # === 2. 综合国内聚合与付费数字源 ===
 https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u
