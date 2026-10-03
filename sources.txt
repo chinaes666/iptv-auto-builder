@@ -8,7 +8,6 @@ https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u
 https://raw.githubusercontent.com/YueChan/Live/main/IPTV.m3u
 https://raw.githubusercontent.com/GuokeR/IPTV/main/ipv4.m3u
 https://raw.githubusercontent.com/GuokeR/IPTV/main/ipv6.m3u
-https://guovin.github.io/iptv-api/result.m3u
 
 # === 3. 影视轮播与特色影院源 ===
 https://raw.githubusercontent.com/qwerttv/IPTV/main/live.m3u
