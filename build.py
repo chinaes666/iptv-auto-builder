@@ -14,7 +14,6 @@ TIMEOUT_SECONDS = 5.0       # 普通源总超时
 CONNECT_TIMEOUT = 3.0       # 建连超时
 MAX_CONCURRENT_CHECKS = 60  # 并发测速数
 MAX_PER_CHANNEL = 8         # 每个频道保留的最佳线路数
-KEEP_IPV6 = True            # 如不支持 IPv6 请设为 False
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
