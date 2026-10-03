@@ -2,7 +2,7 @@ name: Auto Build & Validate IPTV Source
 
 on:
   schedule:
-    - cron: '0 20 * * *' # 每天 UTC 20:00 (北京时间早晨 04:00) 自动校验构建
+    - cron: '0 */4 * * *' # 每 4 小时自动触发一次（北京时间 00:00, 04:00, 08:00, 12:00, 16:00, 20:00）
   workflow_dispatch: # 支持手动触发
 
 jobs:
