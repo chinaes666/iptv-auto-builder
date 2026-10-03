@@ -1,11 +1,14 @@
-# === 央视/卫视/付费/轮播全量上游源 ===
-https://live.fanmingming.com/tv/m3u/ipv6.m3u
-https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u
+# === 1. 央视/卫视 IPv4 专项源 ===
 https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv4.m3u
-https://raw.githubusercontent.com/zbds/iptv/main/iptv.m3u
-https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u
+https://raw.githubusercontent.com/suxuang/myIPTV/main/ipv4.m3u
 https://raw.githubusercontent.com/GuokeR/IPTV/main/ipv4.m3u
-https://raw.githubusercontent.com/YueChan/Live/main/IPTV.m3u
+https://raw.githubusercontent.com/zbds/iptv/main/iptv.m3u
+
+# === 2. 综合国内聚合与付费数字源 ===
+https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u
+https://raw.githubusercontent.com/ssili126/tv/main/itvlist.m3u
+https://raw.githubusercontent.com/supperying/IPTV/main/tv.m3u
+
+# === 3. 影视轮播与特色源 ===
 https://raw.githubusercontent.com/qwerttv/IPTV/main/live.m3u
-https://raw.githubusercontent.com/GuokeR/IPTV/main/ipv6.m3u
-https://raw.githubusercontent.com/surediary/IPTV/main/IPTV.m3u
+https://raw.githubusercontent.com/joevess/IPTV/main/home.m3u
