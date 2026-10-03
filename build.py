@@ -9,11 +9,11 @@ OUTPUT_M3U = "dist/live.m3u"
 OUTPUT_TXT = "dist/live.txt"
 EPG_URL = "http://epg.51zmt.top:8000/e.xml"
 
-# 【测速与过滤配置 - 适度放宽以保留更多稳定国内源】
+# 【测速与过滤配置】
 TIMEOUT_SECONDS = 6.0       # 总超时（秒）
 CONNECT_TIMEOUT = 4.0       # 建连超时（秒）
 MAX_CONCURRENT_CHECKS = 50  # 测速并发数
-MAX_PER_CHANNEL = 6         # 每个频道最多保留的备用优质线路数
+MAX_PER_CHANNEL = 6         # 每个频道保留的最佳线路数
 KEEP_IPV6 = True            # 如不支持 IPv6 请设为 False
 
 headers = {
@@ -27,34 +27,42 @@ PAY_TV_KEYWORDS = [
     "发现之旅", "中学生", "环球旅游", "摄影", "早期教育", "超级体育", "经典剧场"
 ]
 
-# 海外/外语频道排除黑名单（确保纯正国内源）
+# 国外源黑名单（过滤外语台）
 FOREIGN_BLACK_LIST = [
-    "BBC", "CNN", "HBO", "FOX", "NHKs", "KBS", "TVB", "ALJAZAERA", "DW",
+    "BBC", "CNN", "HBO", "FOX", "NHK", "KBS", "TVB", "ALJAZAERA", "DW",
     "DISCOVERY", "NATIONAL GEOGRAPHIC", "STAR MOVIES", "BLOOMBERG"
 ]
 
 def clean_channel_name(name):
-    """清理与规范频道名称"""
+    """精准清理与规范频道名称"""
     if not name:
         return None
 
-    # 过滤黑名单（国外源）
+    # 1. 过滤国外台
     for foreign in FOREIGN_BLACK_LIST:
         if foreign in name.upper():
             return None
 
-    # 1. 清除分辨率、画质、线路后缀
-    pattern = r'[\(\[\（\【\-\_\s]*(1080[pP]|720[pP]|4[kK]|2[kK]|[hH][dD]|[fF][hH][dD]|[sS][dD]|高清|超清|标清|原生|备用|测试|专线|频道|码率|[hH]264|[hH]265|[hH][eE][vV][cC])[\)\]\）\】]*'
+    # 2. 优先对 CCTV 频道进行标准化匹配
+    # 支持 CCTV1, CCTV-1, CCTV13新闻, CCTV5+ 等各种上游写法
+    cctv_match = re.search(r'CCTV[-_\s]*(\d+\+?|13|NEWS|5\+|4K|8K)', name, re.IGNORECASE)
+    if cctv_match:
+        num = cctv_match.group(1).upper()
+        if num == "NEWS":
+            num = "13"
+        return f"CCTV-{num}"
+
+    # 3. 如果是央视其他频道（如 CCTV-4 欧洲/美洲 或 CCTV 各种特殊名称）
+    if "CCTV" in name.upper():
+        # 清理常见干扰词
+        name = re.sub(r'[\(\[\（\【\-\_\s]*(1080[pP]|720[pP]|4[kK]|[hH][dD]|高清|超清|标清|测试|专线)[\)\]\）\】]*', '', name)
+        return name.strip()
+
+    # 4. 清理通用后缀（注意：去掉了会误伤央视的“频道”二字）
+    pattern = r'[\(\[\（\【\-\_\s]*(1080[pP]|720[pP]|4[kK]|2[kK]|[hH][dD]|[fF][hH][dD]|[sS][dD]|高清|超清|标清|原生|备用|测试|专线|码率|[hH]264|[hH]265|[hH][eE][vV][cC])[\)\]\）\】]*'
     name = re.sub(pattern, '', name, flags=re.IGNORECASE)
 
-    # 2. 规范 CCTV 命名（CCTV1 -> CCTV-1, CCTV5+ -> CCTV-5+）
-    cctv_match = re.match(r'^(CCTV)[-_\s]*(\d+\+?|NEWS|CCTV5\+)', name, re.IGNORECASE)
-    if cctv_match:
-        prefix = "CCTV"
-        num = cctv_match.group(2).upper()
-        name = f"{prefix}-{num}"
-
-    # 3. 清理首尾空格与特殊符号
+    # 5. 清理首尾空格与特殊符号
     name = name.strip(' -_')
     return name if name else None
 
@@ -72,7 +80,7 @@ def get_channel_group(name):
     return "地方频道"
 
 async def check_stream(session, semaphore, url):
-    """连通性与可用性校验，返回响应耗时"""
+    """连通性校验"""
     if not url.startswith(("http://", "https://")):
         return False, 999
 
@@ -100,7 +108,7 @@ async def check_stream(session, semaphore, url):
         return False, 999
 
 def parse_m3u(content):
-    """解析 M3U 内容并重新分组分类"""
+    """解析 M3U 内容"""
     channels = []
     lines = content.splitlines()
     current_info = ""
@@ -149,17 +157,15 @@ async def main():
     
     all_channels = []
     async with aiohttp.ClientSession(connector=connector) as session:
-        # 1. 并发拉取上游源
-        print(f"正在并发读取 {len(sources)} 个上游源...")
+        print(f"正在抓取 {len(sources)} 个上游源...")
         fetch_tasks = [fetch_source(session, src) for src in sources]
         source_results = await asyncio.gather(*fetch_tasks)
         
         for res in source_results:
             all_channels.extend(res)
 
-        print(f"共采集到 {len(all_channels)} 个频道的直播流，开始去重与并发测速...")
+        print(f"采集完成，共收集到 {len(all_channels)} 条流。开始验证与去重...")
 
-        # 2. 测速与过滤
         semaphore = asyncio.Semaphore(MAX_CONCURRENT_CHECKS)
         seen_urls = set()
 
@@ -178,9 +184,7 @@ async def main():
                 ch["latency"] = latency
                 valid_channels.append(ch)
 
-    print(f"测速完成！筛选出 {len(valid_channels)} 条有效直播线路。正在按延迟筛选最佳线路...")
-
-    # 3. 按频道排序并限制每个频道保留线路数量（保留速度最快的前 MAX_PER_CHANNEL 条）
+    # 限制每个频道保留线路数量
     channel_groups = {}
     for ch in valid_channels:
         key = ch["name"]
@@ -190,24 +194,21 @@ async def main():
 
     final_channels = []
     for name, lines in channel_groups.items():
-        # 按延迟排序
         lines.sort(key=lambda x: x["latency"])
-        # 最多保留 MAX_PER_CHANNEL 条
         final_channels.extend(lines[:MAX_PER_CHANNEL])
 
-    # 4. 排序并写入文件
     final_channels.sort(key=lambda x: (x["group"], x["name"]))
 
     os.makedirs("dist", exist_ok=True)
 
-    # 生成 M3U 文件
+    # 写入 M3U
     with open(OUTPUT_M3U, "w", encoding="utf-8") as f:
         f.write(f'#EXTM3U x-tvg-url="{EPG_URL}"\n')
         for ch in final_channels:
             info = f'#EXTINF:-1 group-title="{ch["group"]}",{ch["name"]}'
             f.write(f'{info}\n{ch["url"]}\n')
 
-    # 生成 TXT 文件
+    # 写入 TXT
     with open(OUTPUT_TXT, "w", encoding="utf-8") as f:
         current_grp = ""
         for ch in final_channels:
@@ -216,7 +217,7 @@ async def main():
                 f.write(f'{current_grp},#genre#\n')
             f.write(f'{ch["name"]},{ch["url"]}\n')
 
-    print(f"全部完成！最终成功保留 {len(final_channels)} 条高质量线路，涵盖 {len(channel_groups)} 个频道。")
+    print(f"处理完成！成功保留 {len(final_channels)} 条线路，包含央视、卫视、数字付费与影视轮播频道。")
 
 if __name__ == "__main__":
     asyncio.run(main())
