@@ -6,6 +6,14 @@ https://raw.githubusercontent.com/zbds/iptv/main/iptv.m3u
 https://guovin.github.io/iptv-api/result.m3u
 https://live.zbds.top/tv/iptv4.m3u
 https://live.zbds.top/tv/iptv6.m3u
+https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_all.m3u8
+https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_all_status.m3u8
+https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_cctv.m3u8
+https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_cctv_status.m3u8
+https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_pay.m3u8
+https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_pay_status.m3u8
+https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_province.m3u8
+https://raw.githubusercontent.com/best-fan/iptv-sources/refs/heads/main/cn_province_status.m3u8
 
 # === 2. 综合国内聚合与付费数字源 ===
 https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u
