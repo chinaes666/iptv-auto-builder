@@ -1,20 +1,14 @@
-# === 1. 综合聚合与多线路源（推荐必填） ===
+# === 1. 央视/卫视/数字付费频道源 ===
 https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv4.m3u
 https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u
-https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u
+https://raw.githubusercontent.com/zbds/iptv/main/iptv.m3u
+https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u
+
+# === 2. 地方台与全量国内综合源 ===
 https://raw.githubusercontent.com/YueChan/Live/main/IPTV.m3u
 https://raw.githubusercontent.com/GuokeR/IPTV/main/ipv4.m3u
 https://raw.githubusercontent.com/GuokeR/IPTV/main/ipv6.m3u
+https://guovin.github.io/iptv-api/result.m3u
 
-# === 2. 央视/卫视/地方台专项源 ===
-https://raw.githubusercontent.com/zbds/iptv/main/iptv.m3u
-https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn_cctv.m3u
-https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u
-
-# === 3. 港澳台与国际频道源（需要网络支持） ===
-https://raw.githubusercontent.com/iptv-org/iptv/master/streams/hk.m3u
-https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u
-https://raw.githubusercontent.com/iptv-org/iptv/master/streams/mo.m3u
-
-# === 4. 影视轮播与特色频道 ===
+# === 3. 影视轮播与特色影院源 ===
 https://raw.githubusercontent.com/qwerttv/IPTV/main/live.m3u
