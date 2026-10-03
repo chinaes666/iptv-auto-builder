@@ -30,6 +30,18 @@ FOREIGN_BLACK_LIST = [
     "DISCOVERY", "NATIONAL GEOGRAPHIC", "STAR MOVIES", "BLOOMBERG"
 ]
 
+def is_ipv6(url):
+    """判断链接是否为 IPv6 地址"""
+    if "[" in url and "]" in url:
+        return True
+    # 匹配含有典型 IPv6 冒号特征的 host
+    match = re.search(r'https?://([^/:]+)', url)
+    if match:
+        host = match.group(1)
+        if host.count(':') >= 2:
+            return True
+    return False
+
 def clean_channel_name(name):
     """标准化频道名称"""
     if not name:
@@ -40,7 +52,7 @@ def clean_channel_name(name):
         if foreign in name_upper:
             return None
 
-    # 1. 专门匹配 CCTV 频道 (例: CCTV1, CCTV-1, CCTV13新闻, CCTV 4K, CCTV5+)
+    # 1. 匹配 CCTV 频道 (例: CCTV1, CCTV-1, CCTV13新闻, CCTV 4K, CCTV5+)
     cctv_match = re.search(r'CCTV[-_\s]*(\d+\+?|13|NEWS|5\+|4K|8K)', name, re.IGNORECASE)
     if cctv_match:
         num = cctv_match.group(1).upper()
@@ -73,14 +85,15 @@ def get_channel_group(name):
     return "地方频道"
 
 async def check_stream(session, semaphore, url, group):
-    """
-    流连通性检测：
-    如果属于【央视频道】或【付费数字】，防止被国外 GitHub Runner 的区域墙误杀，直接免测通过！
-    """
+    """流连通性检测与 IPv4 过滤"""
     if not url.startswith(("http://", "https://")):
         return False, 999
 
-    # 关键点：国内核心央视/付费源跳过海外 Runner 测速，直接信任通过！
+    # 【关键】硬性踢掉 IPv6 源，只保留纯 IPv4 地址
+    if is_ipv6(url):
+        return False, 999
+
+    # 央视频道和付费数字源对 IPv4 开启直通逻辑
     if group in ["央视频道", "付费数字"]:
         return True, 0.1
 
@@ -100,7 +113,7 @@ async def check_stream(session, semaphore, url, group):
         return False, 999
 
 def parse_playlist_content(content):
-    """同时兼容 M3U 与 TXT 格式解析"""
+    """兼容 M3U 与 TXT 格式解析"""
     channels = []
     lines = content.splitlines()
     current_info = ""
@@ -126,6 +139,10 @@ def parse_playlist_content(content):
                 url = parts[1].strip()
 
             if raw_name and url.startswith(("http://", "https://")):
+                # 直接拦截 IPv6 链接
+                if is_ipv6(url):
+                    continue
+
                 clean_name = clean_channel_name(raw_name)
                 if clean_name:
                     group = get_channel_group(clean_name)
@@ -159,14 +176,14 @@ async def main():
     
     all_channels = []
     async with aiohttp.ClientSession(connector=connector) as session:
-        print(f"正在抓取 {len(sources)} 个上游源...")
+        print(f"正在抓取 {len(sources)} 个 IPv4 上游源...")
         fetch_tasks = [fetch_source(session, src) for src in sources]
         source_results = await asyncio.gather(*fetch_tasks)
         
         for res in source_results:
             all_channels.extend(res)
 
-        print(f"抓取完成，共搜集到 {len(all_channels)} 条直播流（已包含央视与付费源）。开始筛选与测速...")
+        print(f"抓取完成，共搜集到 {len(all_channels)} 条纯 IPv4 直播流。开始校验...")
 
         semaphore = asyncio.Semaphore(MAX_CONCURRENT_CHECKS)
         seen_urls = set()
@@ -186,9 +203,8 @@ async def main():
                 ch["latency"] = latency
                 valid_channels.append(ch)
 
-    print(f"筛选完成！共获得 {len(valid_channels)} 条线路。正在整理央视/卫视/付费数字/影视轮播...")
+    print(f"筛选完成！共获得 {len(valid_channels)} 条有效 IPv4 线路。")
 
-    # 按频道聚合并选取前 N 条线路
     channel_groups = {}
     for ch in valid_channels:
         key = ch["name"]
@@ -221,7 +237,7 @@ async def main():
                 f.write(f'{current_grp},#genre#\n')
             f.write(f'{ch["name"]},{ch["url"]}\n')
 
-    print(f"任务完成！成功保留 {len(final_channels)} 条线路，涵盖 {len(channel_groups)} 个频道（央视/付费台已完整包含）。")
+    print(f"处理完成！最终生成纯 IPv4 列表，保留 {len(final_channels)} 条线路，包含 CCTV-1 ~ CCTV-17 及付费数字台。")
 
 if __name__ == "__main__":
     asyncio.run(main())
